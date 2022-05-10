@@ -67,6 +67,8 @@ export class UploadController {
     this.uploadGallery = this.uploadGallery.bind(this);
     this.deleteGalleryFile = this.deleteGalleryFile.bind(this);
     this.uploadImage = this.uploadImage.bind(this);
+    this.addExternalResource = this.addExternalResource.bind(this);
+    this.deleteExternalResource = this.deleteExternalResource.bind(this);
   }
   id: string;
 
@@ -106,7 +108,7 @@ export class UploadController {
         this.uploadService
           .uploadCoverImage(id, listFile)
           .then((result) => res.status(200).json(result).end())
-          .catch((e) => { console.log(e); handleError(e, res, this.log); });
+          .catch((e) => handleError(e, res, this.log));
       }
     }
   }
@@ -130,7 +132,7 @@ export class UploadController {
         this.uploadService
           .uploadImage(id, listFile)
           .then((result) => res.status(200).json(result).end())
-          .catch((e) => { console.log(e); handleError(e, res, this.log); });
+          .catch((e) => handleError(e, res, this.log));
       }
     }
   }
@@ -195,7 +197,7 @@ export class UploadController {
   addExternalResource(req: Request, res: Response) {
     const type = req.query.type;
     const url = req.query.url;
-    const id = req.params['id'];
+    const id = req.params[this.id];
     if (!id || id.length === 0 || !type || !url) {
       res.status(400).end('id cannot be empty');
     } else {
@@ -205,9 +207,8 @@ export class UploadController {
         .catch((e) => handleError(e, res, this.log));
     }
   }
-
   deleteExternalResource(req: Request, res: Response) {
-    const { id } = req.params;
+    const id = req.params[this.id];
     const url = req.query.url;
     if (url && id) {
       this.uploadService
