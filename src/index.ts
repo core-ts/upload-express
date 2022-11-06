@@ -45,16 +45,15 @@ export interface UploadService {
   uploadGalleryFile(upload: Upload): Promise<UploadInfo[]>;
   updateGallery(id: string, data: UploadInfo[]): Promise<boolean>;
   deleteGalleryFile(id: string, url: string): Promise<boolean>;
-  getGalllery(id: string): Promise<UploadInfo[]>;
   addExternalResource(id: string, data: UploadInfo): Promise<boolean>;
   deleteExternalResource(id: string, url: string): Promise<boolean>;
+  getGallery(id: string): Promise<UploadInfo[]>
 }
 
 export class UploadController {
   constructor(
     public log: Log,
     public uploadService: UploadService,
-    public getUploads: (id: string) => Promise<UploadInfo[]>,
     public generateId: () => string,
     public sizesCover: number[],
     public sizesImage: number[],
@@ -69,6 +68,7 @@ export class UploadController {
     this.uploadImage = this.uploadImage.bind(this);
     this.addExternalResource = this.addExternalResource.bind(this);
     this.deleteExternalResource = this.deleteExternalResource.bind(this);
+    this.getGallery=this.getGallery.bind(this)
   }
   id: string;
 
@@ -77,7 +77,7 @@ export class UploadController {
     if (!id || id.length === 0) {
       res.status(400).end('id cannot be empty');
     } else {
-      this.getUploads(id)
+      this.uploadService.getGallery(id)
         .then((obj) => {
           if (obj) {
             res.status(200).json(obj).end();
@@ -171,7 +171,7 @@ export class UploadController {
     if (!id || id.length === 0) {
       res.status(400).end('data cannot be empty');
     } else {
-      const { data } = req.body;
+      const data = req.body;
       this.uploadService
         .updateGallery(id, data)
         .then((result) => res.status(200).json(result))
